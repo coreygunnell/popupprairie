@@ -182,7 +182,7 @@
             'plantid': plant.id,
             text: plant.name
         });
-        label.addClass("plantCheckbox");
+        label.addClass("plantCheckboxLabel");
         label.attr("plantsize", plant.size);
 
         var checkbox = $('<input />', {
@@ -192,6 +192,7 @@
             value: plant.id
         });
 
+        checkbox.addClass("plantCheckbox");
         checkbox.change(function (e) {
             var row = $('#' + plant.id + "_row");
             if (this.checked) {
@@ -262,7 +263,7 @@
 
 
     function filterCheckboxes(filterType, filterValue, visible) {
-        $(".plantCheckbox").each(function () {
+        $(".plantCheckboxLabel").each(function () {
             if (($(this).attr(filterType) == filterValue)) {
                 var checkBoxId = $(this).prop('id');
                 if (visible) {
