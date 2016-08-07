@@ -20,7 +20,6 @@
         .filter_div {
             display: none;
         }
-
     </style>
 </head>
 
@@ -41,20 +40,20 @@
             <input id="filterButton" class="btn" type="button" value="Filters" />
         </center>
         <div id="filters" class='filter_div'>
-            <label class="switch" >
-                <input class="switch-input" type="checkbox" id='filter_size_short' filtertype='size' filtervalue='short' checked/>
+            <label class="switch">
+                <input class="switch-input" type="checkbox" id='filter_size_short' filtertype='plantsize' filtervalue='short' checked/>
                 <span class="switch-label" data-on="Short" data-off="Short"></span>
                 <span class="switch-handle"></span>
             </label>
 
-            <label class="switch" >
-                <input class="switch-input" type="checkbox" id='filter_size_med' filtertype='size' filtervalue='med' checked/>
+            <label class="switch">
+                <input class="switch-input" type="checkbox" id='filter_size_med' filtertype='plantsize' filtervalue='med' checked/>
                 <span class="switch-label" data-on="Medium" data-off="Medium"></span>
                 <span class="switch-handle"></span>
             </label>
 
-            <label class="switch" >
-                <input class="switch-input" type="checkbox" id='filter_size_tall' filtertype='size' filtervalue='tall' checked/>
+            <label class="switch">
+                <input class="switch-input" type="checkbox" id='filter_size_tall' filtertype='plantsize' filtervalue='tall' checked/>
                 <span class="switch-label" data-on="Tall" data-off="Tall"></span>
                 <span class="switch-handle"></span>
             </label>
@@ -102,9 +101,8 @@
     var thimbleweed = JSON.parse('{"id":"thimbleweed", "latin":"Amsonia ciliata", "name":"Thimbleweed", "start": 4, "end" : 5, "size" : "med", "color":"white"}');
 
     //Small
-    var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "start": 6, "end" : 9, "size" : "small", "color":"#a4a8ff"}');
-    var loveleighest = JSON.parse('{"id":"loveleighest", "name":"MostLoveLeigh", "start": 6, "end" : 9, "size" : "small", "color":"#a4a8ff"}');
-    var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "start": 6, "end" : 9, "size" : "small", "color":"#a4a8ff"}');
+    var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "start": 6, "end" : 9, "size" : "short", "color":"#a4a8ff"}');
+    var loveleighest = JSON.parse('{"id":"loveleighest", "name":"MostLoveLeigh", "start": 6, "end" : 9, "size" : "short", "color":"#a4a8ff"}');
 
     $(document).ready(function () {
 
@@ -136,8 +134,12 @@
 
                 var $row = $('<tr>')
                     .attr('id', plant.id + '_row')
+                    .attr("plantsize", plant.size)
+                    .attr("plantid", plant.id)
                     .css("display", "none")
                     .appendTo($table);
+
+                $row.addClass("plantRow");
 
                 $('<td>')
                     .text(plant.name)
@@ -175,31 +177,38 @@
     function addCheckbox(plant) {
         var container = $('#plants');
 
+        var label = $('<label />', {
+            id: plant.id + "_label",
+            'plantid': plant.id,
+            text: plant.name
+        });
+        label.addClass("plantCheckbox");
+        label.attr("plantsize", plant.size);
+
         var checkbox = $('<input />', {
             type: 'checkbox',
-            id: plant.id,
+            id: plant.id + "_checkbox",
+            'plantid': plant.id,
             value: plant.id
         });
 
-        checkbox.attr("size", plant.size);
-        checkbox.addClass("plantCheckbox");
         checkbox.change(function (e) {
-            var row = $('#' + this.id + "_row");
+            var row = $('#' + plant.id + "_row");
             if (this.checked) {
+                localStorage.setItem("plantselected_" + plant.id, "true");
                 row.css("display", "");
             } else {
+                localStorage.setItem("plantselected_" + plant.id, "false");
                 row.css("display", "none");
             }
 
         });
-        checkbox.appendTo(container);
+        checkbox.prependTo(label);
 
-        $('<label />', {
-            'for': plant.id,
-            text: plant.name
-        }).appendTo(container);
+        label.appendTo(container);
+        localStorage.setItem("plantselected_" + plant.id, "false");
 
-        $('<br>').appendTo(container);
+        //        $('<br>').appendTo(container);
     }
 
 
@@ -245,9 +254,39 @@
             var filterType = $(this).attr("filtertype");
             var filterValue = $(this).attr('filtervalue');
             var visible = $(this).prop('checked');
-            alert("Filter: " + filterType + "  Value: " + filterValue + " Visible: " + visible);
             filterCheckboxes(filterType, filterValue, visible);
             filterTableRows(filterType, filterValue, visible);
+        });
+    }
+
+
+
+    function filterCheckboxes(filterType, filterValue, visible) {
+        $(".plantCheckbox").each(function () {
+            if (($(this).attr(filterType) == filterValue)) {
+                var checkBoxId = $(this).prop('id');
+                if (visible) {
+                    $('#' + checkBoxId).css("display", "");
+                } else {
+                    $('#' + checkBoxId).css("display", "none");
+                }
+            }
+        });
+    }
+
+    function filterTableRows(filterType, filterValue, visible) {
+        $(".plantRow").each(function () {
+            if (($(this).attr(filterType) == filterValue)) {
+                var rowId = $(this).attr('id');
+                if (visible) {
+                    var isPlantSelected = localStorage.getItem("plantselected_" + $(this).attr('plantid'));
+                    if (isPlantSelected == "true") {
+                        $('#' + rowId).css("display", "");
+                    }
+                } else {
+                    $('#' + rowId).css("display", "none");
+                }
+            }
         });
     }
 </script>
