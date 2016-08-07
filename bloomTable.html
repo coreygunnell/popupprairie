@@ -2,13 +2,12 @@
 <html>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="switch.css">
+    <link rel="stylesheet" type="text/css" href="css/switch.css">
     <style>
         .bloomTable {
             border-collapse: collapse;
             border-spacing: 0;
             width: 100%;
-            /*            border: 1px solid #ddd;*/
         }
         
         th,
@@ -17,6 +16,11 @@
             text-align: left;
             padding: 8px;
         }
+
+        .filter_div {
+            display: none;
+        }
+
     </style>
 </head>
 
@@ -36,21 +40,21 @@
         <center>
             <input id="filterButton" class="btn" type="button" value="Filters" />
         </center>
-        <div id="filters">
-            <label class="switch">
-                <input class="switch-input" type="checkbox" />
+        <div id="filters" class='filter_div'>
+            <label class="switch" >
+                <input class="switch-input" type="checkbox" id='filter_size_short' filtertype='size' filtervalue='short' checked/>
                 <span class="switch-label" data-on="Short" data-off="Short"></span>
                 <span class="switch-handle"></span>
             </label>
 
-            <label class="switch">
-                <input class="switch-input" type="checkbox" />
+            <label class="switch" >
+                <input class="switch-input" type="checkbox" id='filter_size_med' filtertype='size' filtervalue='med' checked/>
                 <span class="switch-label" data-on="Medium" data-off="Medium"></span>
                 <span class="switch-handle"></span>
             </label>
 
-            <label class="switch">
-                <input class="switch-input" type="checkbox" />
+            <label class="switch" >
+                <input class="switch-input" type="checkbox" id='filter_size_tall' filtertype='size' filtervalue='tall' checked/>
                 <span class="switch-label" data-on="Tall" data-off="Tall"></span>
                 <span class="switch-handle"></span>
             </label>
@@ -85,7 +89,7 @@
 
 </body>
 
-<script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 <script>
     //Tall
     var newenglandaster = JSON.parse('{"id": "newenglandaster", "name":"New England Aster", "start": 8, "end" : 9, "size" : "tall", "color":"#aa71c2"}');
@@ -105,6 +109,7 @@
     $(document).ready(function () {
 
         initFilterButton();
+        initFilters();
         addSelectAll();
         buildTable();
 
@@ -229,6 +234,17 @@
             $("#filters").slideToggle("slow", function () {
                 // Animation complete.
             });
+        });
+    }
+
+
+
+    function initFilters() {
+
+        $('.switch-input').change(function (e) {
+            var filterType = $(this).attr("filtertype");
+            var filterValue = $(this).attr('filtervalue');
+            alert("Filter: " + filterType + "  Value: " + filterValue + " Checked: " + $(this).prop('checked'));
         });
     }
 </script>
