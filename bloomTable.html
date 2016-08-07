@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="switch.css">
+    <style>
+        .bloomTable {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            /*            border: 1px solid #ddd;*/
+        }
+        
+        th,
+        td {
+            border: none;
+            text-align: left;
+            padding: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <h2>Bloom Table</h2></center>
+
+    <p>
+        This is a functional prototype as a proof of concept so no attention was given to asthetics, although the colors for the plants are rgb pulled from the MoBot image db.
+        <br>The style elements will be derived from the squarespace css.
+        <br>It builds the controls and table dynamically from json plant data which means we can add plants very easily. It also means we can refactor the plant data out to its own datastore to be used with other widgets.
+        <br>The plants are sorted by relative hight with the tallest at the top and shortest at the bottom.
+        <br>Right click on this page and select View Source to see the behind the scenes magic.
+    </p>
+
+    <p>
+        <center>
+            <input id="filterButton" class="btn" type="button" value="Filters" />
+        </center>
+        <div id="filters">
+            <label class="switch">
+                <input class="switch-input" type="checkbox" />
+                <span class="switch-label" data-on="Short" data-off="Short"></span>
+                <span class="switch-handle"></span>
+            </label>
+
+            <label class="switch">
+                <input class="switch-input" type="checkbox" />
+                <span class="switch-label" data-on="Medium" data-off="Medium"></span>
+                <span class="switch-handle"></span>
+            </label>
+
+            <label class="switch">
+                <input class="switch-input" type="checkbox" />
+                <span class="switch-label" data-on="Tall" data-off="Tall"></span>
+                <span class="switch-handle"></span>
+            </label>
+        </div>
+    </p>
+
+    <p>
+        <div id="plants">
+        </div>
+    </p>
+
+    <center>
+        <div style="overflow-x:auto;">
+            <table class="bloomTable" id="bloomTable" rules="rows">
+                <thead>
+                    <tr id="header">
+                        <th></th>
+                        <th>April</th>
+                        <th>May</th>
+                        <th>June</th>
+                        <th>July</th>
+                        <th>August</th>
+                        <th>September</th>
+                        <th>October</th>
+                    </tr>
+                </thead>
+                <tbody id="bloomTableBody">
+                </tbody>
+            </table>
+        </div>
+    </center>
+
+</body>
+
+<script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+<script>
+    //Tall
+    var newenglandaster = JSON.parse('{"id": "newenglandaster", "name":"New England Aster", "start": 8, "end" : 9, "size" : "tall", "color":"#aa71c2"}');
+
+    //Medium
+    var purpleconeflower = JSON.parse('{"id": "purpleconeflower", "name":"Purple Coneflower", "start": 6, "end" : 8, "size" : "med", "color":"#ff8ecf"}');
+    var blazingstar = JSON.parse('{"id":"blazingstar", "name":"Prairie Blazing Star", "start": 7, "end" : 8, "size" : "med", "color":"#ad79b7"}');
+    var pprairieclover = JSON.parse('{"id":"pprairieclover", "name":"Purple Prairie Clover", "start": 6, "end" : 8, "size" : "med", "color":"#b632a9"}');
+    var bluestar = JSON.parse('{"id":"bluestar", "latin":"Amsonia ciliata", "name":"Blue Star", "start": 5, "end" : 5, "size" : "med", "color":"#acaed5"}');
+    var thimbleweed = JSON.parse('{"id":"thimbleweed", "latin":"Amsonia ciliata", "name":"Thimbleweed", "start": 4, "end" : 5, "size" : "med", "color":"white"}');
+
+    //Small
+    var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "start": 6, "end" : 9, "size" : "small", "color":"#a4a8ff"}');
+    var loveleighest = JSON.parse('{"id":"loveleighest", "name":"MostLoveLeigh", "start": 6, "end" : 9, "size" : "small", "color":"#a4a8ff"}');
+    var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "start": 6, "end" : 9, "size" : "small", "color":"#a4a8ff"}');
+
+    $(document).ready(function () {
+
+        initFilterButton();
+        addSelectAll();
+        buildTable();
+
+
+
+
+        function buildTable() {
+            var tallPlants = new Array(newenglandaster);
+            var mediumPlants = new Array(purpleconeflower, blazingstar, pprairieclover, bluestar, thimbleweed);
+            var smallPlants = new Array(harebell);
+
+            addToTable(tallPlants);
+            addToTable(mediumPlants);
+            addToTable(smallPlants);
+        }
+
+
+
+        function addToTable(plantArray) {
+            var $table = $('#bloomTableBody');
+            plantArray.forEach(function (plant) {
+
+                addCheckbox(plant);
+
+                var $row = $('<tr>')
+                    .attr('id', plant.id + '_row')
+                    .css("display", "none")
+                    .appendTo($table);
+
+                $('<td>')
+                    .text(plant.name)
+                    .appendTo($row);
+
+                for (i = 4; i <= 10; i++) {
+                    if (i >= plant.start && i <= plant.end) {
+                        if (plant.color == 'white') {
+                            var $td = $('<td>');
+                            $td.css("border-top", "1px solid #4f4f4f");
+                            $td.css("border-bottom", "1px solid #4f4f4f");
+                            if (i == plant.start) {
+                                $td.css("border-left", "1px solid #4f4f4f");
+                            } else if (i == plant.end) {
+                                $td.css("border-right", "1px solid #4f4f4f");
+                            }
+                            $td.appendTo($row);
+                        } else {
+                            $('<td>')
+                                .css("background-color", plant.color)
+                                .appendTo($row);
+                        }
+                    } else {
+                        $('<td>')
+                            .appendTo($row);
+                    }
+                }
+            });
+        }
+
+    });
+
+
+
+    function addCheckbox(plant) {
+        var container = $('#plants');
+
+        var checkbox = $('<input />', {
+            type: 'checkbox',
+            id: plant.id,
+            value: plant.id
+        });
+
+        checkbox.attr("size", plant.size);
+        checkbox.addClass("plantCheckbox");
+        checkbox.change(function (e) {
+            var row = $('#' + this.id + "_row");
+            if (this.checked) {
+                row.css("display", "");
+            } else {
+                row.css("display", "none");
+            }
+
+        });
+        checkbox.appendTo(container);
+
+        $('<label />', {
+            'for': plant.id,
+            text: plant.name
+        }).appendTo(container);
+
+        $('<br>').appendTo(container);
+    }
+
+
+
+
+    function addSelectAll() {
+        var container = $('#plants');
+
+        var checkbox = $('<input />', {
+            type: 'checkbox',
+            id: 'selectAll',
+            className: "selectAll",
+            value: "selectAll"
+        });
+
+        checkbox.change(function (e) {
+            $(".plantCheckbox").prop('checked', $(this).prop('checked')).change();
+        });
+
+        checkbox.appendTo(container);
+
+        $('<label />', {
+            'for': 'selectAll',
+            text: 'Select All'
+        }).appendTo(container);
+
+        $('<br>').appendTo(container);
+    }
+
+    function initFilterButton() {
+        $("#filterButton").click(function () {
+            $("#filters").slideToggle("slow", function () {
+                // Animation complete.
+            });
+        });
+    }
+</script>
+
+</html>
