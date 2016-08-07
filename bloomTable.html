@@ -244,7 +244,10 @@
         $('.switch-input').change(function (e) {
             var filterType = $(this).attr("filtertype");
             var filterValue = $(this).attr('filtervalue');
-            alert("Filter: " + filterType + "  Value: " + filterValue + " Checked: " + $(this).prop('checked'));
+            var visible = $(this).prop('checked');
+            alert("Filter: " + filterType + "  Value: " + filterValue + " Visible: " + visible);
+            filterCheckboxes(filterType, filterValue, visible);
+            filterTableRows(filterType, filterValue, visible);
         });
     }
 </script>
