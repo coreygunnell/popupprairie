@@ -58,6 +58,7 @@
                 <span class="switch-handle"></span>
             </label>
 
+
             <label class="switch">
                 <input class="switch-input" type="checkbox" id='filter_bloom_early' filtertype='bloom' filtervalue='early' checked/>
                 <span class="switch-label" data-on="Early" data-off="Early"></span>
@@ -75,6 +76,7 @@
                 <span class="switch-label" data-on="Late" data-off="Late"></span>
                 <span class="switch-handle"></span>
             </label>
+
         </div>
     </p>
 
@@ -282,36 +284,37 @@
     function initBloomFilters() {
         $(".switch-input[filtertype=bloom]").change(function (e) {
             var bloomFilterStates = {};
-            $(".switch-input[filtertype=bloom]").map(function () {
-                var bloomPeriod = $(this).attr('filtervalue');
+
+            $(".switch-input[filtertype=bloom]").each(function () {
+                var filterValue = $(this).attr('filtervalue');
                 var visible = $(this).prop('checked');
-                bloomFilterStates.bloomPeriod = visible;
+
+                bloomFilterStates[filterValue] = visible;
             });
             filterBloomCheckboxes(bloomFilterStates);
-            filterBloomTableRows(bloomFilterStates);
+            //            filterBloomTableRows(bloomFilterStates);
         });
     }
 
-    //bloomFilterStates = {"early": false, "mid": true, "late": true};
+    //bloomFilterStates = [{bloomPeriod: "early", bloomVisible: true}, {bloomPeriod: "mid", bloomVisible: false}, {bloomPeriod: "late", bloomVisible: false}]
     function filterBloomCheckboxes(bloomFilterStates) {
         $(".plantCheckboxLabel").each(function () {
-            var plantBloomPeriods = $(this).attr('bloom').split(',');
-            var bloomVisible = plantBloomPeriods.map(function () {
-                    bloomFilterStates.bloomPeriod;
-                })
-                .get();
+            var thisPlantBloomPeriods = $(this).attr('bloom').split(',');
+            var p = $(this).attr('plantid');
+            var bloomVisible = [];
 
-            var plantBloomPeriodsVisibilityEqual = !!bloomVisible.reduce(function (a, b) {
-                return (a === b) ? a : NaN;
-            });
+            for (var i = 0; i < thisPlantBloomPeriods.length; i++) {
+                bloomVisible.push(bloomFilterStates[thisPlantBloomPeriods[i]]);
+            }
+
+            var plantBloomPeriodsVisibilityEqual = bloomVisible.allValuesSame();
 
             if (plantBloomPeriodsVisibilityEqual) {
+                console.log($(this).attr('plantid') + ":" + bloomVisible[0])
                 if (bloomVisible[0]) {
-                    $('#' + checkBoxId).css("display", "");
+                    $('#' + $(this).prop('id')).css("display", "");
                 } else {
-                    var plantBloomPeriods = $(this).attr(filterType);
-
-                    $('#' + checkBoxId).css("display", "none");
+                    $('#' + $(this).prop('id')).css("display", "none");
                 }
             }
         });
@@ -361,6 +364,17 @@
                 }
             }
         });
+    }
+
+
+    Array.prototype.allValuesSame = function () {
+
+        for (var i = 1; i < this.length; i++) {
+            if (this[i] !== this[0])
+                return false;
+        }
+
+        return true;
     }
 </script>
 
