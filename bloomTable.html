@@ -311,10 +311,17 @@
 
             if (plantBloomPeriodsVisibilityEqual) {
                 console.log($(this).attr('plantid') + ":" + bloomVisible[0])
+                var isPlantSelected = localStorage.getItem("plantselected_" + $(this).attr('plantid'));
                 if (bloomVisible[0]) {
                     $('#' + $(this).prop('id')).css("display", "");
+                    if (isPlantSelected == "true") {
+                        $('#' + $(this).attr('plantid') + '_row').css("display", "");
+                    }
                 } else {
                     $('#' + $(this).prop('id')).css("display", "none");
+                    //   if (!isPlantSelected == "true") {
+                    $('#' + $(this).attr('plantid') + '_row').css("display", "none");
+                    //                    }
                 }
             }
         });
