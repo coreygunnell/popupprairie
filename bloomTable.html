@@ -2,7 +2,6 @@
 <html>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="css/switch.css">
     <style>
         .bloomTable {
             border-collapse: collapse;
@@ -17,7 +16,7 @@
             padding: 8px;
         }
 
-        .filter_div {
+        .plants_div {
             display: none;
         }
     </style>
@@ -27,61 +26,15 @@
     <center>
         <h2>Bloom Table</h2></center>
 
-    <p>
-        This is a functional prototype as a proof of concept so no attention was given to asthetics, although the colors for the plants are rgb pulled from the MoBot image db.
-        <br>The style elements will be derived from the squarespace css.
-        <br>It builds the controls and table dynamically from json plant data which means we can add plants very easily. It also means we can refactor the plant data out to its own datastore to be used with other widgets.
-        <br>The plants are sorted by relative hight with the tallest at the top and shortest at the bottom.
-        <br>Right click on this page and select View Source to see the behind the scenes magic.
-    </p>
 
     <p>
         <center>
-            <input id="filterButton" class="btn" type="button" value="Filters" />
+            <input id="plantsButton" class="btn" type="button" value="Plants" />
         </center>
-        <div id="filters" class='filter_div'>
-            <label class="switch">
-                <input class="switch-input" type="checkbox" id='filter_size_short' filtertype='plantsize' filtervalue='short' checked/>
-                <span class="switch-label" data-on="Short" data-off="Short"></span>
-                <span class="switch-handle"></span>
-            </label>
-
-            <label class="switch">
-                <input class="switch-input" type="checkbox" id='filter_size_med' filtertype='plantsize' filtervalue='med' checked/>
-                <span class="switch-label" data-on="Medium" data-off="Medium"></span>
-                <span class="switch-handle"></span>
-            </label>
-
-            <label class="switch">
-                <input class="switch-input" type="checkbox" id='filter_size_tall' filtertype='plantsize' filtervalue='tall' checked/>
-                <span class="switch-label" data-on="Tall" data-off="Tall"></span>
-                <span class="switch-handle"></span>
-            </label>
-
-
-            <label class="switch">
-                <input class="switch-input" type="checkbox" id='filter_bloom_early' filtertype='bloom' filtervalue='early' checked/>
-                <span class="switch-label" data-on="Early" data-off="Early"></span>
-                <span class="switch-handle"></span>
-            </label>
-
-            <label class="switch">
-                <input class="switch-input" type="checkbox" id='filter_bloom_mid' filtertype='bloom' filtervalue='mid' checked/>
-                <span class="switch-label" data-on="Mid" data-off="Mid"></span>
-                <span class="switch-handle"></span>
-            </label>
-
-            <label class="switch">
-                <input class="switch-input" type="checkbox" id='filter_bloom_late' filtertype='bloom' filtervalue='late' checked/>
-                <span class="switch-label" data-on="Late" data-off="Late"></span>
-                <span class="switch-handle"></span>
-            </label>
-
-        </div>
     </p>
 
     <p>
-        <div id="plants">
+        <div id="plants" class='plants_div'>
         </div>
     </p>
 
@@ -126,9 +79,7 @@
 
     $(document).ready(function () {
 
-        initFilterButton();
-        initSizeFilters();
-        initBloomFilters();
+        initPlantsButton();
         addSelectAll();
         buildTable();
 
@@ -158,14 +109,20 @@
                     .attr("plantsize", plant.size)
                     .attr("bloom", plant.bloom)
                     .attr("plantid", plant.id)
+                    .attr('filters', plant.size + ',' + plant.bloom)
                     .css("display", "none")
                     .appendTo($table);
 
                 $row.addClass("plantRow");
+                $row.click(function () {
+                    $('#' + plant.id + '_checkbox').prop('checked', false).change();
+                });
 
-                $('<td>')
+
+                var $td = $('<td>')
                     .text(plant.name)
                     .appendTo($row);
+
 
                 for (i = 4; i <= 10; i++) {
                     if (i >= plant.start && i <= plant.end) {
@@ -206,6 +163,7 @@
         });
         label.addClass("plantCheckboxLabel");
         label.attr("plantsize", plant.size)
+            .attr('filters', plant.size + ',' + plant.bloom)
             .attr("bloom", plant.bloom);
 
         var checkbox = $('<input />', {
@@ -262,116 +220,13 @@
         $('<br>').appendTo(container);
     }
 
-    function initFilterButton() {
-        $("#filterButton").click(function () {
-            $("#filters").slideToggle("slow");
+    function initPlantsButton() {
+        $("#plantsButton").click(function () {
+            $("#plants").slideToggle("slow");
         });
     }
 
 
-
-
-    function initSizeFilters() {
-        $(".switch-input[filtertype=plantsize]").change(function (e) {
-            var filterType = $(this).attr("filtertype");
-            var filterValue = $(this).attr('filtervalue');
-            var visible = $(this).prop('checked');
-            filterSizeCheckboxes(filterType, filterValue, visible);
-            filterSizeTableRows(filterType, filterValue, visible);
-        });
-    }
-
-    function initBloomFilters() {
-        $(".switch-input[filtertype=bloom]").change(function (e) {
-            var bloomFilterStates = {};
-
-            $(".switch-input[filtertype=bloom]").each(function () {
-                var filterValue = $(this).attr('filtervalue');
-                var visible = $(this).prop('checked');
-
-                bloomFilterStates[filterValue] = visible;
-            });
-            filterBloomCheckboxes(bloomFilterStates);
-            //            filterBloomTableRows(bloomFilterStates);
-        });
-    }
-
-    //bloomFilterStates = [{bloomPeriod: "early", bloomVisible: true}, {bloomPeriod: "mid", bloomVisible: false}, {bloomPeriod: "late", bloomVisible: false}]
-    function filterBloomCheckboxes(bloomFilterStates) {
-        $(".plantCheckboxLabel").each(function () {
-            var thisPlantBloomPeriods = $(this).attr('bloom').split(',');
-            var p = $(this).attr('plantid');
-            var bloomVisible = [];
-
-            for (var i = 0; i < thisPlantBloomPeriods.length; i++) {
-                bloomVisible.push(bloomFilterStates[thisPlantBloomPeriods[i]]);
-            }
-
-            var plantBloomPeriodsVisibilityEqual = bloomVisible.allValuesSame();
-
-            if (plantBloomPeriodsVisibilityEqual) {
-                console.log($(this).attr('plantid') + ":" + bloomVisible[0])
-                var isPlantSelected = localStorage.getItem("plantselected_" + $(this).attr('plantid'));
-                if (bloomVisible[0]) {
-                    $('#' + $(this).prop('id')).css("display", "");
-                    if (isPlantSelected == "true") {
-                        $('#' + $(this).attr('plantid') + '_row').css("display", "");
-                    }
-                } else {
-                    $('#' + $(this).prop('id')).css("display", "none");
-                    //   if (!isPlantSelected == "true") {
-                    $('#' + $(this).attr('plantid') + '_row').css("display", "none");
-                    //                    }
-                }
-            }
-        });
-    }
-
-    function filterBloomTableRows(bloomFilterStates) {
-        $(".plantRow").each(function () {
-            if (($(this).attr(filterType) == filterValue)) {
-                var rowId = $(this).attr('id');
-                if (visible) {
-                    var isPlantSelected = localStorage.getItem("plantselected_" + $(this).attr('plantid'));
-                    if (isPlantSelected == "true") {
-                        $('#' + rowId).css("display", "");
-                    }
-                } else {
-                    $('#' + rowId).css("display", "none");
-                }
-            }
-        });
-    }
-
-
-    function filterSizeCheckboxes(filterType, filterValue, visible) {
-        $(".plantCheckboxLabel").each(function () {
-            if (($(this).attr(filterType) == filterValue)) {
-                var checkBoxId = $(this).prop('id');
-                if (visible) {
-                    $('#' + checkBoxId).css("display", "");
-                } else {
-                    $('#' + checkBoxId).css("display", "none");
-                }
-            }
-        });
-    }
-
-    function filterSizeTableRows(filterType, filterValue, visible) {
-        $(".plantRow").each(function () {
-            if (($(this).attr(filterType) == filterValue)) {
-                var rowId = $(this).attr('id');
-                if (visible) {
-                    var isPlantSelected = localStorage.getItem("plantselected_" + $(this).attr('plantid'));
-                    if (isPlantSelected == "true") {
-                        $('#' + rowId).css("display", "");
-                    }
-                } else {
-                    $('#' + rowId).css("display", "none");
-                }
-            }
-        });
-    }
 
 
     Array.prototype.allValuesSame = function () {
