@@ -19,6 +19,10 @@
         .plants_div {
             display: none;
         }
+
+        .plantCheckboxLabel {
+            font-weight:bold;
+        }
     </style>
 </head>
 
@@ -164,10 +168,15 @@
         label.attr("plantsize", plant.size)
             .attr('filters', plant.size + ',' + plant.bloom)
             .attr("bloom", plant.bloom);
+
         if (plant.size == 'med') {
             label.html(plant.name);
         } else {
             label.html((plant.size == 'tall') ? plant.name + ' &uarr;' : plant.name + ' &darr;');
+        }
+
+        if (plant.color != 'white') {
+            label.css('color', plant.color);
         }
 
         var checkbox = $('<input />', {
