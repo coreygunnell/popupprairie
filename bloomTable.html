@@ -21,7 +21,7 @@
         }
 
         .plantCheckboxLabel {
-            font-weight:bold;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -129,9 +129,14 @@
 
 
                 for (i = 4; i <= 10; i++) {
+                    var $td = $('<td>');
                     if (i >= plant.start && i <= plant.end) {
+
+                        if (plant.size != 'med') {
+                            $td.html((plant.size == 'tall') ? '&uarr;' : '&darr;');
+                        }
+
                         if (plant.color == 'white') {
-                            var $td = $('<td>');
                             $td.css("border-top", "1px solid #4f4f4f");
                             $td.css("border-bottom", "1px solid #4f4f4f");
                             if (i == plant.start) {
@@ -139,16 +144,12 @@
                             } else if (i == plant.end) {
                                 $td.css("border-right", "1px solid #4f4f4f");
                             }
-                            $td.appendTo($row);
                         } else {
-                            $('<td>')
-                                .css("background-color", plant.color)
-                                .appendTo($row);
+                            $td.css("background-color", plant.color)
                         }
-                    } else {
-                        $('<td>')
-                            .appendTo($row);
                     }
+
+                    $td.appendTo($row);
                 }
             });
         }
