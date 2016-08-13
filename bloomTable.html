@@ -80,8 +80,8 @@
     $(document).ready(function () {
 
         initPlantsButton();
-        addSelectAll();
         buildTable();
+        addSelectAll();
 
 
 
@@ -211,6 +211,8 @@
         checkbox.change(function (e) {
             $(".plantCheckbox").prop('checked', $(this).prop('checked')).change();
         });
+
+        checkbox.prop("checked", true).change();
 
         checkbox.appendTo(container);
 
