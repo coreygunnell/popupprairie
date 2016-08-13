@@ -182,7 +182,9 @@
             } else {
                 localStorage.setItem("plantselected_" + plant.id, "false");
                 row.css("display", "none");
+                $("#selectAll").prop("checked", false);
             }
+
 
         });
         checkbox.prependTo(label);
