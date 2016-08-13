@@ -159,12 +159,16 @@
         var label = $('<label />', {
             id: plant.id + "_label",
             'plantid': plant.id,
-            text: plant.name
         });
         label.addClass("plantCheckboxLabel");
         label.attr("plantsize", plant.size)
             .attr('filters', plant.size + ',' + plant.bloom)
             .attr("bloom", plant.bloom);
+        if (plant.size == 'med') {
+            label.html(plant.name);
+        } else {
+            label.html((plant.size == 'tall') ? plant.name + ' &uarr;' : plant.name + ' &darr;');
+        }
 
         var checkbox = $('<input />', {
             type: 'checkbox',
@@ -172,6 +176,7 @@
             'plantid': plant.id,
             value: plant.id
         });
+
 
         checkbox.addClass("plantCheckbox");
         checkbox.change(function (e) {
