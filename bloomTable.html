@@ -2,7 +2,6 @@
 <html>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="css/switch.css">
     <style>
         .bloomTable {
             border-collapse: collapse;
@@ -17,8 +16,12 @@
             padding: 8px;
         }
 
-        .filter_div {
+        .plants_div {
             display: none;
+        }
+
+        .plantCheckboxLabel {
+            font-weight: bold;
         }
     </style>
 </head>
@@ -27,41 +30,15 @@
     <center>
         <h2>Bloom Table</h2></center>
 
-    <p>
-        This is a functional prototype as a proof of concept so no attention was given to asthetics, although the colors for the plants are rgb pulled from the MoBot image db.
-        <br>The style elements will be derived from the squarespace css.
-        <br>It builds the controls and table dynamically from json plant data which means we can add plants very easily. It also means we can refactor the plant data out to its own datastore to be used with other widgets.
-        <br>The plants are sorted by relative hight with the tallest at the top and shortest at the bottom.
-        <br>Right click on this page and select View Source to see the behind the scenes magic.
-    </p>
 
     <p>
         <center>
-            <input id="filterButton" class="btn" type="button" value="Filters" />
+            <input id="plantsButton" class="btn" type="button" value="Plants" />
         </center>
-        <div id="filters" class='filter_div'>
-            <label class="switch">
-                <input class="switch-input" type="checkbox" id='filter_size_short' filtertype='plantsize' filtervalue='short' checked/>
-                <span class="switch-label" data-on="Short" data-off="Short"></span>
-                <span class="switch-handle"></span>
-            </label>
-
-            <label class="switch">
-                <input class="switch-input" type="checkbox" id='filter_size_med' filtertype='plantsize' filtervalue='med' checked/>
-                <span class="switch-label" data-on="Medium" data-off="Medium"></span>
-                <span class="switch-handle"></span>
-            </label>
-
-            <label class="switch">
-                <input class="switch-input" type="checkbox" id='filter_size_tall' filtertype='plantsize' filtervalue='tall' checked/>
-                <span class="switch-label" data-on="Tall" data-off="Tall"></span>
-                <span class="switch-handle"></span>
-            </label>
-        </div>
     </p>
 
     <p>
-        <div id="plants">
+        <div id="plants" class='plants_div'>
         </div>
     </p>
 
@@ -91,25 +68,24 @@
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 <script>
     //Tall
-    var newenglandaster = JSON.parse('{"id": "newenglandaster", "name":"New England Aster", "start": 8, "end" : 9, "size" : "tall", "color":"#aa71c2"}');
+    var newenglandaster = JSON.parse('{"id": "newenglandaster", "name":"New England Aster", "start": 8, "end" : 9, "size" : "tall", "spacing": "2.5", "color":"#aa71c2", "bloom" : ["late"]}');
 
     //Medium
-    var purpleconeflower = JSON.parse('{"id": "purpleconeflower", "name":"Purple Coneflower", "start": 6, "end" : 8, "size" : "med", "color":"#ff8ecf"}');
-    var blazingstar = JSON.parse('{"id":"blazingstar", "name":"Prairie Blazing Star", "start": 7, "end" : 8, "size" : "med", "color":"#ad79b7"}');
-    var pprairieclover = JSON.parse('{"id":"pprairieclover", "name":"Purple Prairie Clover", "start": 6, "end" : 8, "size" : "med", "color":"#b632a9"}');
-    var bluestar = JSON.parse('{"id":"bluestar", "latin":"Amsonia ciliata", "name":"Blue Star", "start": 5, "end" : 5, "size" : "med", "color":"#acaed5"}');
-    var thimbleweed = JSON.parse('{"id":"thimbleweed", "latin":"Amsonia ciliata", "name":"Thimbleweed", "start": 4, "end" : 5, "size" : "med", "color":"white"}');
+    var purpleconeflower = JSON.parse('{"id": "purpleconeflower", "name":"Purple Coneflower", "start": 6, "end" : 8, "size" : "med", "spacing": "1.5","color":"#ff8ecf", "bloom" : ["mid","late"]}');
+    var blazingstar = JSON.parse('{"id":"blazingstar", "name":"Prairie Blazing Star", "start": 7, "end" : 8, "size" : "med", "spacing": "1","color":"#ad79b7", "bloom" : ["mid","late"]}');
+    var pprairieclover = JSON.parse('{"id":"pprairieclover", "name":"Purple Prairie Clover", "start": 6, "end" : 8, "size" : "med", "spacing": "1.5","color":"#b632a9", "bloom" : ["mid","late"]}');
+    var bluestar = JSON.parse('{"id":"bluestar", "latin":"Amsonia ciliata", "name":"Blue Star", "start": 5, "end" : 5, "size" : "med", "spacing": "3","color":"#acaed5", "bloom" : ["early"]}');
+    var thimbleweed = JSON.parse('{"id":"thimbleweed", "latin":"Amsonia ciliata", "name":"Thimbleweed", "start": 4, "end" : 5, "size" : "med", "spacing": "1","color":"white", "bloom" : ["early"]}');
 
     //Small
-    var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "start": 6, "end" : 9, "size" : "short", "color":"#a4a8ff"}');
-    var loveleighest = JSON.parse('{"id":"loveleighest", "name":"MostLoveLeigh", "start": 6, "end" : 9, "size" : "short", "color":"#a4a8ff"}');
+    var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "start": 6, "end" : 9, "size" : "short", "spacing": ".5","color":"#a4a8ff", "bloom" : ["mid", "late"]}');
+    var loveleighest = JSON.parse('{"id":"loveleighest", "name":"MostLoveLeigh", "start": 6, "end" : 7, "size" : "short", "spacing": "1","color":"#a4a8ff", "bloom" : ["mid"]}');
 
     $(document).ready(function () {
 
-        initFilterButton();
-        initFilters();
-        addSelectAll();
+        initPlantsButton();
         buildTable();
+        addSelectAll();
 
 
 
@@ -117,7 +93,7 @@
         function buildTable() {
             var tallPlants = new Array(newenglandaster);
             var mediumPlants = new Array(purpleconeflower, blazingstar, pprairieclover, bluestar, thimbleweed);
-            var smallPlants = new Array(harebell);
+            var smallPlants = new Array(harebell, loveleighest);
 
             addToTable(tallPlants);
             addToTable(mediumPlants);
@@ -135,20 +111,32 @@
                 var $row = $('<tr>')
                     .attr('id', plant.id + '_row')
                     .attr("plantsize", plant.size)
+                    .attr("bloom", plant.bloom)
                     .attr("plantid", plant.id)
+                    .attr('filters', plant.size + ',' + plant.bloom)
                     .css("display", "none")
                     .appendTo($table);
 
                 $row.addClass("plantRow");
+                $row.click(function () {
+                    $('#' + plant.id + '_checkbox').prop('checked', false).change();
+                });
 
-                $('<td>')
+
+                var $td = $('<td>')
                     .text(plant.name)
                     .appendTo($row);
 
+
                 for (i = 4; i <= 10; i++) {
+                    var $td = $('<td>');
                     if (i >= plant.start && i <= plant.end) {
+
+                        if (plant.size != 'med') {
+                            $td.html((plant.size == 'tall') ? '&uarr;' : '&darr;');
+                        }
+
                         if (plant.color == 'white') {
-                            var $td = $('<td>');
                             $td.css("border-top", "1px solid #4f4f4f");
                             $td.css("border-bottom", "1px solid #4f4f4f");
                             if (i == plant.start) {
@@ -156,16 +144,12 @@
                             } else if (i == plant.end) {
                                 $td.css("border-right", "1px solid #4f4f4f");
                             }
-                            $td.appendTo($row);
                         } else {
-                            $('<td>')
-                                .css("background-color", plant.color)
-                                .appendTo($row);
+                            $td.css("background-color", plant.color)
                         }
-                    } else {
-                        $('<td>')
-                            .appendTo($row);
                     }
+
+                    $td.appendTo($row);
                 }
             });
         }
@@ -180,10 +164,21 @@
         var label = $('<label />', {
             id: plant.id + "_label",
             'plantid': plant.id,
-            text: plant.name
         });
         label.addClass("plantCheckboxLabel");
-        label.attr("plantsize", plant.size);
+        label.attr("plantsize", plant.size)
+            .attr('filters', plant.size + ',' + plant.bloom)
+            .attr("bloom", plant.bloom);
+
+        if (plant.size == 'med') {
+            label.html(plant.name);
+        } else {
+            label.html((plant.size == 'tall') ? plant.name + ' &uarr;' : plant.name + ' &darr;');
+        }
+
+        if (plant.color != 'white') {
+            label.css('color', plant.color);
+        }
 
         var checkbox = $('<input />', {
             type: 'checkbox',
@@ -191,6 +186,7 @@
             'plantid': plant.id,
             value: plant.id
         });
+
 
         checkbox.addClass("plantCheckbox");
         checkbox.change(function (e) {
@@ -201,7 +197,9 @@
             } else {
                 localStorage.setItem("plantselected_" + plant.id, "false");
                 row.css("display", "none");
+                $("#selectAll").prop("checked", false);
             }
+
 
         });
         checkbox.prependTo(label);
@@ -229,6 +227,8 @@
             $(".plantCheckbox").prop('checked', $(this).prop('checked')).change();
         });
 
+        checkbox.prop("checked", true).change();
+
         checkbox.appendTo(container);
 
         $('<label />', {
@@ -239,56 +239,23 @@
         $('<br>').appendTo(container);
     }
 
-    function initFilterButton() {
-        $("#filterButton").click(function () {
-            $("#filters").slideToggle("slow", function () {
-                // Animation complete.
-            });
+    function initPlantsButton() {
+        $("#plantsButton").click(function () {
+            $("#plants").slideToggle("slow");
         });
     }
 
 
 
-    function initFilters() {
 
-        $('.switch-input').change(function (e) {
-            var filterType = $(this).attr("filtertype");
-            var filterValue = $(this).attr('filtervalue');
-            var visible = $(this).prop('checked');
-            filterCheckboxes(filterType, filterValue, visible);
-            filterTableRows(filterType, filterValue, visible);
-        });
-    }
+    Array.prototype.allValuesSame = function () {
 
+        for (var i = 1; i < this.length; i++) {
+            if (this[i] !== this[0])
+                return false;
+        }
 
-
-    function filterCheckboxes(filterType, filterValue, visible) {
-        $(".plantCheckboxLabel").each(function () {
-            if (($(this).attr(filterType) == filterValue)) {
-                var checkBoxId = $(this).prop('id');
-                if (visible) {
-                    $('#' + checkBoxId).css("display", "");
-                } else {
-                    $('#' + checkBoxId).css("display", "none");
-                }
-            }
-        });
-    }
-
-    function filterTableRows(filterType, filterValue, visible) {
-        $(".plantRow").each(function () {
-            if (($(this).attr(filterType) == filterValue)) {
-                var rowId = $(this).attr('id');
-                if (visible) {
-                    var isPlantSelected = localStorage.getItem("plantselected_" + $(this).attr('plantid'));
-                    if (isPlantSelected == "true") {
-                        $('#' + rowId).css("display", "");
-                    }
-                } else {
-                    $('#' + rowId).css("display", "none");
-                }
-            }
-        });
+        return true;
     }
 </script>
 
