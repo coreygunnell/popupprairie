@@ -63,6 +63,25 @@
         </div>
     </center>
 
+    <p>
+        <div class='sqftcacl_div'>
+            Installation square footage:
+            <input type="number" id='sqftinput' name="sqft" min="1" value=0>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="sqftTable" id="sqftTable" rules="rows">
+                <thead>
+                    <tr id="header">
+                        <th>Plants</th>
+                    </tr>
+                </thead>
+                <tbody id="sqftTableBody">
+                </tbody>
+            </table>
+        </div>
+    </p>
+
 </body>
 
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
@@ -81,11 +100,14 @@
     var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "start": 6, "end" : 9, "size" : "short", "spacing": ".5","color":"#a4a8ff", "bloom" : ["mid", "late"]}');
     var loveleighest = JSON.parse('{"id":"loveleighest", "name":"MostLoveLeigh", "start": 6, "end" : 7, "size" : "short", "spacing": "1","color":"#a4a8ff", "bloom" : ["mid"]}');
 
+    var selectedPlants = new Array();
+
     $(document).ready(function () {
 
         initPlantsButton();
         buildTable();
         addSelectAll();
+        initSqFtCalc();
 
 
 
@@ -100,6 +122,54 @@
             addToTable(smallPlants);
         }
 
+
+        function initSqFtCalc() {
+            $('#sqftinput').change(function () {
+                calcSqFt()
+            });
+        }
+
+
+        function calcSqFt() {
+            var sqft = parseInt($('#sqftinput').val(), 10);
+            var plantCount = [];
+            while (sqft > 0) {
+                //                selectedPlants.every(function (plantstring) {
+                for (i = 0; i < selectedPlants.length; i++) {
+                    var plant = JSON.parse(selectedPlants[i]);
+                    var plantId = plant.id;
+                    var plantspacing = parseFloat(plant.spacing);
+                    sqft = sqft - plantspacing;
+                    if (sqft > 0) {
+                        //                        if (plantCount.indexOf(plantId) >= 0) {
+                        if ($.inArray(plantId, plantCount) >= 0) {
+                            plantCount[plantId] = plantCount[plantId] + 1;
+                        } else {
+                            plantCount[plantId] = 1;
+                        }
+
+                    } else {
+                        break;
+                    }
+                };
+            }
+
+            var $table = $('#sqftTableBody');
+            if (selectedPlants.length > Object.keys(plantCount).length) {
+                var $row = $('<tr>').appendTo($table);
+                $('<td>')
+                    .text('You have too many plants selected for ' + $('#sqftinput').val() + " square feet.")
+                    .appendTo($row);
+            } else {
+                Object.keys(plantCount).forEach(function (plant) {
+                    var $row = $('<tr>').appendTo($table);
+                    $('<td>')
+                        .text(plant + ': ' + plantCount[plant])
+                        .appendTo($row);
+                });
+            }
+
+        }
 
 
         function addToTable(plantArray) {
@@ -120,6 +190,7 @@
                 $row.addClass("plantRow");
                 $row.click(function () {
                     $('#' + plant.id + '_checkbox').prop('checked', false).change();
+                    calcSqFt();
                 });
 
 
@@ -156,6 +227,20 @@
 
     });
 
+    function removePlant(plant) {
+        for (var i = selectedPlants.length - 1; i >= 0; i--) {
+            if (JSON.parse(selectedPlants[i]) == plant) {
+                selectedPlants.splice(i, 1);
+                break; //<-- Uncomment  if only the first term has to be removed
+            }
+        }
+    }
+
+
+    function addPlant(plant) {
+        //probably don't need to check for existence
+        selectedPlants.push(JSON.stringify(plant));
+    }
 
 
     function addCheckbox(plant) {
@@ -192,22 +277,20 @@
         checkbox.change(function (e) {
             var row = $('#' + plant.id + "_row");
             if (this.checked) {
-                localStorage.setItem("plantselected_" + plant.id, "true");
+                addPlant(plant);
                 row.css("display", "");
             } else {
-                localStorage.setItem("plantselected_" + plant.id, "false");
                 row.css("display", "none");
                 $("#selectAll").prop("checked", false);
+                removePlant(plant);
             }
 
+            //            calcSqFt();
 
         });
         checkbox.prependTo(label);
 
         label.appendTo(container);
-        localStorage.setItem("plantselected_" + plant.id, "false");
-
-        //        $('<br>').appendTo(container);
     }
 
 
