@@ -130,28 +130,49 @@
     }
 
 
+    function getMinSqFtFromSelected() {
+        var min = -1;
+        for (i = 0; i < selectedPlants.length; i++) {
+            var plant = JSON.parse(selectedPlants[i]);
+            var plantspacing = (parseFloat(plant.spacing) * 12) * (parseFloat(plant.spacing) * 12);
+            if (min == -1 || plantspacing < min) {
+                min = plantspacing
+            }
+        }
+
+        return min;
+    }
 
     function calcSqFt() {
         var sqft = parseInt($('#sqftinput').val(), 10);
         var sqftinch = sqft * 144;
         var plantCount = [];
-        while (sqftinch > 0) {
+        var minSpacing = getMinSqFtFromSelected();
+        console.log('minSpacing: ' + minSpacing);
+        while (sqftinch > minSpacing) {
+            console.log('sqft ' + sqftinch + ">  min " + minSpacing);
             for (i = 0; i < selectedPlants.length; i++) {
                 var plant = JSON.parse(selectedPlants[i]);
                 var plantId = plant.id;
-                var plantspacing = parseFloat(plant.spacing) * 24;
-                sqftinch = sqftinch - plantspacing;
-                if (sqftinch > 0) {
-                    console.log('sqft: ' + sqftinch);
-                    if ($.inArray(plantId, Object.keys(plantCount)) >= 0) {
-                        plantCount[plantId] = plantCount[plantId] + 1;
-                        console.log(plantId + ': ' + plantCount[plantId]);
-                    } else {
-                        plantCount[plantId] = 1;
-                    }
+                var plantspacing = (parseFloat(plant.spacing) * 12) * (parseFloat(plant.spacing) * 12);
+                if (sqftinch >= plantspacing) {
+                    sqftinch = sqftinch - plantspacing;
+                    console.log('subtracting for ' + plantId + "-" + plantspacing + '. New sqft = ' + sqftinch);
+                    if (sqftinch >= 0) {
+                        console.log('sqft: ' + sqftinch + " - " + plantId + " fits - " + plantspacing);
+                        if ($.inArray(plantId, Object.keys(plantCount)) >= 0) {
+                            plantCount[plantId] = plantCount[plantId] + 1;
+                            console.log(plantId + ': ' + plantCount[plantId]);
+                        } else {
+                            plantCount[plantId] = 1;
+                        }
 
-                } else {
-                    break;
+                    } else {
+                        break;
+                    }
+                }
+                else{
+                    console.log('sqft: ' + sqftinch + " - " + plantId + " does Not fit - " + plantspacing);
                 }
             };
         }
