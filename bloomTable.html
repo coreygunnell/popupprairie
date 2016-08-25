@@ -244,9 +244,13 @@
             var spinner = $('<input />', {
                 id: plant.id + '_spinner',
                 type: 'number',
+                min: 0,
                 value: 0
             });
             spinner.addClass('spinner');
+            spinner.change(function (e) {
+                displaySelectedPlantsArea();
+            });
 
             $('<td>')
                 .html(spinnerLabel)
@@ -257,6 +261,19 @@
         });
     }
 
+    function displaySelectedPlantsArea() {
+        var totalArea = 0;
+        for (var i = selectedPlants.length - 1; i >= 0; i--) {
+            var selectedPlant = JSON.parse(selectedPlants[i]);
+            var numberOfSelectedPlants = $('#' + selectedPlant.id + '_spinner').val();
+            var plantspacing = (parseFloat(selectedPlant.spacing)) * (parseFloat(selectedPlant.spacing));
+            totalArea += plantspacing * numberOfSelectedPlants;
+        }
+
+        var $warningDiv = $('#warningDiv');
+        $warningDiv.show();
+        $warningDiv.html("Selected plants require " + totalArea + " square feet.");
+    }
 
     function addToTable(plantArray) {
         var $table = $('#bloomTableBody');
@@ -277,7 +294,7 @@
             $row.click(function () {
                 $('#' + plant.id + '_checkbox').prop('checked', false).change();
                 removePlant(plant);
-                calcSqFt();
+//                calcSqFt();
             });
 
 
@@ -326,6 +343,8 @@
         $('#' + plant.id + "_row").hide();
         $('#' + plant.id + '_sqft_row').hide();
         $("#selectAll").prop("checked", false);
+
+        displaySelectedPlantsArea();
     }
 
 
