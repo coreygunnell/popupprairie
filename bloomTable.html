@@ -153,30 +153,36 @@
             console.log('sqft ' + sqftinch + ">  min " + minSpacing);
             for (i = 0; i < selectedPlants.length; i++) {
                 var plant = JSON.parse(selectedPlants[i]);
-                var plantId = plant.id;
+                var plantName = plant.name;
                 var plantspacing = (parseFloat(plant.spacing) * 12) * (parseFloat(plant.spacing) * 12);
                 if (sqftinch >= plantspacing) {
                     sqftinch = sqftinch - plantspacing;
-                    console.log('subtracting for ' + plantId + "-" + plantspacing + '. New sqft = ' + sqftinch);
+                    console.log('subtracting for ' + plantName + "-" + plantspacing + '. New sqft = ' + sqftinch);
                     if (sqftinch >= 0) {
-                        console.log('sqft: ' + sqftinch + " - " + plantId + " fits - " + plantspacing);
-                        if ($.inArray(plantId, Object.keys(plantCount)) >= 0) {
-                            plantCount[plantId] = plantCount[plantId] + 1;
-                            console.log(plantId + ': ' + plantCount[plantId]);
+                        console.log('sqft: ' + sqftinch + " - " + plantName + " fits - " + plantspacing);
+                        if ($.inArray(plantName, Object.keys(plantCount)) >= 0) {
+                            plantCount[plantName] = plantCount[plantName] + 1;
+                            console.log(plantName + ': ' + plantCount[plantName]);
                         } else {
-                            plantCount[plantId] = 1;
+                            plantCount[plantName] = 1;
                         }
 
                     } else {
                         break;
                     }
-                }
-                else{
-                    console.log('sqft: ' + sqftinch + " - " + plantId + " does Not fit - " + plantspacing);
+                } else {
+                    console.log('sqft: ' + sqftinch + " - " + plantName + " does Not fit - " + plantspacing);
                 }
             };
         }
 
+        addToSqFtTable(plantCount);
+        return plantCount;
+
+    }
+
+
+    function addToSqFtTable(plantCount) {
         var $table = $('#sqftTableBody');
         $table.empty();
         if (selectedPlants.length > Object.keys(plantCount).length) {
@@ -187,12 +193,17 @@
         } else {
             Object.keys(plantCount).forEach(function (plant) {
                 var $row = $('<tr>').appendTo($table);
+
+                var spinnerLabel = '<label for="' + plant + '_spinner">' + plant + ' </label>';
+                var spinner = '<input id=" ' + plant + '_spinner" type="number" value="' + plantCount[plant] + '"/>';
                 $('<td>')
-                    .text(plant + ': ' + plantCount[plant])
+                    .html(spinnerLabel)
+                    .appendTo($row);
+                $('<td>')
+                    .html(spinner)
                     .appendTo($row);
             });
         }
-
     }
 
 
