@@ -395,15 +395,10 @@
             var row = $('#' + plant.id + "_row");
             if (this.checked) {
                 addPlant(plant);
-                //                row.css("display", "");
 
             } else {
-                //                row.css("display", "none");
-                //                $("#selectAll").prop("checked", false);
                 removePlant(plant);
             }
-
-
 
         });
         checkbox.prependTo(label);
