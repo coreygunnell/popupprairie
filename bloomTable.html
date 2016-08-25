@@ -23,6 +23,10 @@
         .plantCheckboxLabel {
             font-weight: bold;
         }
+
+        .tooManyPlantsDiv {
+            display: none;
+        }
     </style>
 </head>
 
@@ -69,6 +73,10 @@
             <input type="number" id='sqftinput' name="sqft" min="1" value=0>
         </div>
 
+        <p>
+            <div id='warningDiv' class='tooManyPlantsDiv'></div>
+        </p>
+
         <div style="overflow-x:auto;">
             <table class="sqftTable" id="sqftTable" rules="rows">
                 <thead>
@@ -100,12 +108,17 @@
     var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "start": 6, "end" : 9, "size" : "short", "spacing": ".5","color":"#a4a8ff", "bloom" : ["mid", "late"]}');
     var loveleighest = JSON.parse('{"id":"loveleighest", "name":"MostLoveLeigh", "start": 6, "end" : 7, "size" : "short", "spacing": "1","color":"#a4a8ff", "bloom" : ["mid"]}');
 
+    var tallPlants = new Array(newenglandaster);
+    var mediumPlants = new Array(purpleconeflower, blazingstar, pprairieclover, bluestar, thimbleweed);
+    var smallPlants = new Array(harebell, loveleighest);
+
     var selectedPlants = new Array();
 
     $(document).ready(function () {
 
         initPlantsButton();
         buildTable();
+        buildSqFtTable();
         addSelectAll();
         initSqFtCalc();
 
@@ -113,13 +126,15 @@
     });
 
     function buildTable() {
-        var tallPlants = new Array(newenglandaster);
-        var mediumPlants = new Array(purpleconeflower, blazingstar, pprairieclover, bluestar, thimbleweed);
-        var smallPlants = new Array(harebell, loveleighest);
-
         addToTable(tallPlants);
         addToTable(mediumPlants);
         addToTable(smallPlants);
+    }
+
+    function buildSqFtTable() {
+        addToSqFtTable(tallPlants);
+        addToSqFtTable(mediumPlants);
+        addToSqFtTable(smallPlants);
     }
 
 
@@ -153,57 +168,90 @@
             console.log('sqft ' + sqftinch + ">  min " + minSpacing);
             for (i = 0; i < selectedPlants.length; i++) {
                 var plant = JSON.parse(selectedPlants[i]);
-                var plantName = plant.name;
+                var plantId = plant.id;
                 var plantspacing = (parseFloat(plant.spacing) * 12) * (parseFloat(plant.spacing) * 12);
                 if (sqftinch >= plantspacing) {
                     sqftinch = sqftinch - plantspacing;
-                    console.log('subtracting for ' + plantName + "-" + plantspacing + '. New sqft = ' + sqftinch);
+                    console.log('subtracting for ' + plantId + "-" + plantspacing + '. New sqft = ' + sqftinch);
                     if (sqftinch >= 0) {
-                        console.log('sqft: ' + sqftinch + " - " + plantName + " fits - " + plantspacing);
-                        if ($.inArray(plantName, Object.keys(plantCount)) >= 0) {
-                            plantCount[plantName] = plantCount[plantName] + 1;
-                            console.log(plantName + ': ' + plantCount[plantName]);
+                        console.log('sqft: ' + sqftinch + " - " + plantId + " fits - " + plantspacing);
+                        if ($.inArray(plantId, Object.keys(plantCount)) >= 0) {
+                            plantCount[plantId] = plantCount[plantId] + 1;
+                            console.log(plantId + ': ' + plantCount[plantId]);
                         } else {
-                            plantCount[plantName] = 1;
+                            plantCount[plantId] = 1;
                         }
 
                     } else {
                         break;
                     }
                 } else {
-                    console.log('sqft: ' + sqftinch + " - " + plantName + " does Not fit - " + plantspacing);
+                    console.log('sqft: ' + sqftinch + " - " + plantId + " does Not fit - " + plantspacing);
                 }
             };
         }
 
-        addToSqFtTable(plantCount);
+        updateSqFtTable(plantCount);
         return plantCount;
 
     }
 
 
-    function addToSqFtTable(plantCount) {
-        var $table = $('#sqftTableBody');
-        $table.empty();
-        if (selectedPlants.length > Object.keys(plantCount).length) {
-            var $row = $('<tr>').appendTo($table);
-            $('<td>')
-                .text('You have too many plants selected for ' + $('#sqftinput').val() + " square feet.")
-                .appendTo($row);
-        } else {
-            Object.keys(plantCount).forEach(function (plant) {
-                var $row = $('<tr>').appendTo($table);
+    function updateSqFtTable(plantCount) {
+        $('.sqFtRow').css("display", "none");
+        var $warningDiv = $('#warningDiv');
 
-                var spinnerLabel = '<label for="' + plant + '_spinner">' + plant + ' </label>';
-                var spinner = '<input id=" ' + plant + '_spinner" type="number" value="' + plantCount[plant] + '"/>';
-                $('<td>')
-                    .html(spinnerLabel)
-                    .appendTo($row);
-                $('<td>')
-                    .html(spinner)
-                    .appendTo($row);
+        if ($('#sqftinput').val() != 0 && selectedPlants.length > Object.keys(plantCount).length) {
+            console.log('You have too many plants selected for ' + $('#sqftinput').val() + " square feet.")
+            $warningDiv.css("display", "");
+            $warningDiv.show();
+            $warningDiv.html('You have too many plants selected for ' + $('#sqftinput').val() + " square feet.");
+        } else {
+            $warningDiv.css("display", "none");
+            $warningDiv.hide();
+            Object.keys(plantCount).forEach(function (plant) {
+                //set spinner value
+                $('#' + plant + '_spinner').val(plantCount[plant]);
+                //set row visible
+                $('#' + plant + '_sqft_row').css("display", "");
             });
         }
+    }
+
+    function addToSqFtTable(plantArray) {
+        var $table = $('#sqftTableBody');
+        plantArray.forEach(function (plant) {
+            var $row = $('<tr>')
+                .attr('id', plant.id + '_sqft_row')
+                .attr("plantsize", plant.size)
+                .attr("plantid", plant.id)
+                .css("display", "none")
+                .appendTo($table);
+
+            $row.addClass("sqFtRow");
+
+            var spinnerLabel = $('<label />', {
+                id: plant.id + "_spinner_label",
+                for: plant.id + '_spinner',
+                'plantid': plant.id,
+            });
+            spinnerLabel.addClass("spinnerLabel");
+            spinnerLabel.html(plant.name);
+
+            var spinner = $('<input />', {
+                id: plant.id + '_spinner',
+                type: 'number',
+                value: 0
+            });
+            spinner.addClass('spinner');
+
+            $('<td>')
+                .html(spinnerLabel)
+                .appendTo($row);
+            $('<td>')
+                .html(spinner)
+                .appendTo($row);
+        });
     }
 
 
@@ -363,19 +411,6 @@
         $("#plantsButton").click(function () {
             $("#plants").slideToggle("slow");
         });
-    }
-
-
-
-
-    Array.prototype.allValuesSame = function () {
-
-        for (var i = 1; i < this.length; i++) {
-            if (this[i] !== this[0])
-                return false;
-        }
-
-        return true;
     }
 </script>
 
