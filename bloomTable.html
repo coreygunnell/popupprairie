@@ -310,7 +310,6 @@
 
         var heightRow = $('<tr>')
             .attr('id', height + '_row')
-            //            .css("display", "none")
             .appendTo($table);
 
         heightRow.addClass("plantHeightRow");
@@ -357,10 +356,6 @@
             for (i = 4; i <= 10; i++) {
                 var $td = $('<td>');
                 if (i >= plant.start && i <= plant.end) {
-
-                    //                    if (plant.size != 'med') {
-                    //                        $td.html((plant.size == 'tall') ? '&uarr;' : '&darr;');
-                    //                    }
 
                     if (plant.color == 'white') {
                         $td.css("border-top", "1px solid #4f4f4f");
@@ -455,11 +450,7 @@
             .attr('filters', plant.size + ',' + plant.bloom)
             .attr("bloom", plant.bloom);
 
-        if (plant.size == 'med') {
-            label.html(plant.name);
-        } else {
-            label.html((plant.size == 'tall') ? plant.name + ' &uarr;' : plant.name + ' &darr;');
-        }
+        label.html(plant.name);
 
         if (plant.color != 'white') {
             label.css('color', plant.color);
