@@ -23,6 +23,10 @@
         .plantCheckboxLabel {
             font-weight: bold;
         }
+
+        .tooManyPlantsDiv {
+            display: none;
+        }
     </style>
 </head>
 
@@ -63,6 +67,29 @@
         </div>
     </center>
 
+    <p>
+        <div class='sqftcacl_div'>
+            Installation square footage:
+            <input type="number" id='sqftinput' name="sqft" min="1" value=0>
+        </div>
+
+        <p>
+            <div id='warningDiv' class='tooManyPlantsDiv'></div>
+        </p>
+
+        <div style="overflow-x:auto;">
+            <table class="sqftTable" id="sqftTable" rules="rows">
+                <thead>
+                    <tr id="header">
+                        <th>Plants</th>
+                    </tr>
+                </thead>
+                <tbody id="sqftTableBody">
+                </tbody>
+            </table>
+        </div>
+    </p>
+
 </body>
 
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
@@ -81,81 +108,297 @@
     var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "start": 6, "end" : 9, "size" : "short", "spacing": ".5","color":"#a4a8ff", "bloom" : ["mid", "late"]}');
     var loveleighest = JSON.parse('{"id":"loveleighest", "name":"MostLoveLeigh", "start": 6, "end" : 7, "size" : "short", "spacing": "1","color":"#a4a8ff", "bloom" : ["mid"]}');
 
+    var tallPlants = new Array(newenglandaster);
+    var mediumPlants = new Array(purpleconeflower, blazingstar, pprairieclover, bluestar, thimbleweed);
+    var smallPlants = new Array(harebell, loveleighest);
+
+    var selectedPlants = new Array();
+
     $(document).ready(function () {
 
         initPlantsButton();
         buildTable();
+        buildSqFtTable();
         addSelectAll();
+        initSqFtCalc();
 
-
-
-
-        function buildTable() {
-            var tallPlants = new Array(newenglandaster);
-            var mediumPlants = new Array(purpleconeflower, blazingstar, pprairieclover, bluestar, thimbleweed);
-            var smallPlants = new Array(harebell, loveleighest);
-
-            addToTable(tallPlants);
-            addToTable(mediumPlants);
-            addToTable(smallPlants);
-        }
-
-
-
-        function addToTable(plantArray) {
-            var $table = $('#bloomTableBody');
-            plantArray.forEach(function (plant) {
-
-                addCheckbox(plant);
-
-                var $row = $('<tr>')
-                    .attr('id', plant.id + '_row')
-                    .attr("plantsize", plant.size)
-                    .attr("bloom", plant.bloom)
-                    .attr("plantid", plant.id)
-                    .attr('filters', plant.size + ',' + plant.bloom)
-                    .css("display", "none")
-                    .appendTo($table);
-
-                $row.addClass("plantRow");
-                $row.click(function () {
-                    $('#' + plant.id + '_checkbox').prop('checked', false).change();
-                });
-
-
-                var $td = $('<td>')
-                    .text(plant.name)
-                    .appendTo($row);
-
-
-                for (i = 4; i <= 10; i++) {
-                    var $td = $('<td>');
-                    if (i >= plant.start && i <= plant.end) {
-
-                        if (plant.size != 'med') {
-                            $td.html((plant.size == 'tall') ? '&uarr;' : '&darr;');
-                        }
-
-                        if (plant.color == 'white') {
-                            $td.css("border-top", "1px solid #4f4f4f");
-                            $td.css("border-bottom", "1px solid #4f4f4f");
-                            if (i == plant.start) {
-                                $td.css("border-left", "1px solid #4f4f4f");
-                            } else if (i == plant.end) {
-                                $td.css("border-right", "1px solid #4f4f4f");
-                            }
-                        } else {
-                            $td.css("background-color", plant.color)
-                        }
-                    }
-
-                    $td.appendTo($row);
-                }
-            });
-        }
 
     });
 
+    function buildTable() {
+        addHeightRow('Tall');
+        addToTable(tallPlants);
+        addHeightRow('Medium');
+        addToTable(mediumPlants);
+        addHeightRow('Short');
+        addToTable(smallPlants);
+    }
+
+    function buildSqFtTable() {
+        addToSqFtTable(tallPlants);
+        addToSqFtTable(mediumPlants);
+        addToSqFtTable(smallPlants);
+    }
+
+
+    function initSqFtCalc() {
+        $('#sqftinput').change(function () {
+            calcSqFt()
+        });
+    }
+
+
+    function getMinSqFtFromSelected() {
+        var min = -1;
+        for (i = 0; i < selectedPlants.length; i++) {
+            var plant = JSON.parse(selectedPlants[i]);
+            var plantspacing = (parseFloat(plant.spacing) * 12) * (parseFloat(plant.spacing) * 12);
+            if (min == -1 || plantspacing < min) {
+                min = plantspacing
+            }
+        }
+
+        return min;
+    }
+
+    function calcSqFt() {
+        var plantCount = [];
+        var sqft = parseInt($('#sqftinput').val(), 10);
+        if (sqft > 0) {
+            var sqftinch = sqft * 144;
+            var minSpacing = getMinSqFtFromSelected();
+            console.log('minSpacing: ' + minSpacing);
+            while (sqftinch > minSpacing) {
+                console.log('sqft ' + sqftinch + ">  min " + minSpacing);
+                for (i = 0; i < selectedPlants.length; i++) {
+                    var plant = JSON.parse(selectedPlants[i]);
+                    var plantId = plant.id;
+                    var plantspacing = (parseFloat(plant.spacing) * 12) * (parseFloat(plant.spacing) * 12);
+                    if (sqftinch >= plantspacing) {
+                        sqftinch = sqftinch - plantspacing;
+                        console.log('subtracting for ' + plantId + "-" + plantspacing + '. New sqft = ' + sqftinch);
+                        if (sqftinch >= 0) {
+                            console.log('sqft: ' + sqftinch + " - " + plantId + " fits - " + plantspacing);
+                            if ($.inArray(plantId, Object.keys(plantCount)) >= 0) {
+                                plantCount[plantId] = plantCount[plantId] + 1;
+                                console.log(plantId + ': ' + plantCount[plantId]);
+                            } else {
+                                plantCount[plantId] = 1;
+                            }
+
+                        } else {
+                            break;
+                        }
+                    } else {
+                        console.log('sqft: ' + sqftinch + " - " + plantId + " does Not fit - " + plantspacing);
+                    }
+                };
+            }
+
+            updateSqFtTable(plantCount);
+        }
+        return plantCount;
+
+    }
+
+
+    function updateSqFtTable(plantCount) {
+        $('.sqFtRow').css("display", "none");
+        var $warningDiv = $('#warningDiv');
+
+        if ($('#sqftinput').val() != 0 && selectedPlants.length > Object.keys(plantCount).length) {
+            $warningDiv.show();
+            $warningDiv.html('You have too many plants selected for ' + $('#sqftinput').val() + " square feet.");
+        } else {
+            $warningDiv.hide();
+            Object.keys(plantCount).forEach(function (plant) {
+                showAndSetSqFtRow(plant, plantCount[plant]);
+            });
+        }
+    }
+
+    function showAndSetSqFtRow(plant, plantCount) {
+        //set spinner value
+        $('#' + plant + '_spinner').val(plantCount);
+        //set row visible
+        $('#' + plant + '_sqft_row').css("display", "");
+    }
+
+    function addToSqFtTable(plantArray) {
+        var $table = $('#sqftTableBody');
+        plantArray.forEach(function (plant) {
+            var $row = $('<tr>')
+                .attr('id', plant.id + '_sqft_row')
+                .attr("plantsize", plant.size)
+                .attr("plantid", plant.id)
+                .css("display", "none")
+                .appendTo($table);
+
+            $row.addClass("sqFtRow");
+
+            var spinnerLabel = $('<label />', {
+                id: plant.id + "_spinner_label",
+                for: plant.id + '_spinner',
+                'plantid': plant.id,
+            });
+            spinnerLabel.addClass("spinnerLabel");
+            spinnerLabel.html(plant.name);
+
+            var spinner = $('<input />', {
+                id: plant.id + '_spinner',
+                type: 'number',
+                min: 0,
+                value: 0
+            });
+            spinner.addClass('spinner');
+            spinner.change(function (e) {
+                displaySelectedPlantsArea();
+            });
+
+            var spinnerInfoLabel = $('<label />', {
+                id: plant.id + "_spinner_info_label",
+                for: plant.id + '_spinner',
+                'plantid': plant.id,
+            });
+            spinnerInfoLabel.addClass("spinnerInfoLabel");
+            var plantspacing = (parseFloat(plant.spacing)) * (parseFloat(plant.spacing));
+            spinnerInfoLabel.html(plantspacing + ' sqft');
+
+            $('<td>')
+                .html(spinnerLabel)
+                .css("background-color", plant.color != 'white' ? plant.color : '')
+                .appendTo($row);
+            $('<td>')
+                .html(spinner)
+                .appendTo($row);
+            $('<td>')
+                .html(spinnerInfoLabel)
+                .appendTo($row);
+        });
+    }
+
+    function displaySelectedPlantsArea() {
+        var totalArea = 0;
+        for (var i = selectedPlants.length - 1; i >= 0; i--) {
+            var selectedPlant = JSON.parse(selectedPlants[i]);
+            var numberOfSelectedPlants = $('#' + selectedPlant.id + '_spinner').val();
+            var plantspacing = (parseFloat(selectedPlant.spacing)) * (parseFloat(selectedPlant.spacing));
+            totalArea += plantspacing * numberOfSelectedPlants;
+        }
+
+        var $warningDiv = $('#warningDiv');
+        $warningDiv.show();
+        if (totalArea > $('#sqftinput').val()) {
+            $warningDiv.html("Selected plants require " + totalArea + " square feet.  This exceeds your desired area.");
+        } else {
+            $warningDiv.html("Selected plants require " + totalArea + " square feet.");
+        }
+    }
+
+    function addHeightRow(height) {
+        var $table = $('#bloomTableBody');
+
+        var heightRow = $('<tr>')
+            .attr('id', height + '_row')
+            //            .css("display", "none")
+            .appendTo($table);
+
+        heightRow.addClass("plantHeightRow");
+
+        var heightTD = $('<td>')
+            .html('<span style="font-weight:bold">' + height + '</span>')
+            .appendTo(heightRow);
+
+        for (i = 4; i <= 10; i++) {
+            var heightTD = $('<td>');
+            heightTD.appendTo(heightRow);
+        }
+    }
+
+    function addToTable(plantArray) {
+        var $table = $('#bloomTableBody');
+
+        plantArray.forEach(function (plant) {
+
+            addCheckbox(plant);
+
+            var $row = $('<tr>')
+                .attr('id', plant.id + '_row')
+                .attr("plantsize", plant.size)
+                .attr("bloom", plant.bloom)
+                .attr("plantid", plant.id)
+                .attr('filters', plant.size + ',' + plant.bloom)
+                .css("display", "none")
+                .appendTo($table);
+
+            $row.addClass("plantRow");
+            $row.click(function () {
+                $('#' + plant.id + '_checkbox').prop('checked', false).change();
+                removePlant(plant);
+                //                calcSqFt();
+            });
+
+
+            var $td = $('<td>')
+                .text(plant.name)
+                .appendTo($row);
+
+
+            for (i = 4; i <= 10; i++) {
+                var $td = $('<td>');
+                if (i >= plant.start && i <= plant.end) {
+
+                    //                    if (plant.size != 'med') {
+                    //                        $td.html((plant.size == 'tall') ? '&uarr;' : '&darr;');
+                    //                    }
+
+                    if (plant.color == 'white') {
+                        $td.css("border-top", "1px solid #4f4f4f");
+                        $td.css("border-bottom", "1px solid #4f4f4f");
+                        if (i == plant.start) {
+                            $td.css("border-left", "1px solid #4f4f4f");
+                        } else if (i == plant.end) {
+                            $td.css("border-right", "1px solid #4f4f4f");
+                        }
+                    } else {
+                        $td.css("background-color", plant.color)
+                    }
+                }
+
+                $td.appendTo($row);
+            }
+        });
+    }
+
+
+
+    function removePlant(plant) {
+        for (var i = selectedPlants.length - 1; i >= 0; i--) {
+            var selectedPlant = JSON.parse(selectedPlants[i]);
+            if (selectedPlant.id == plant.id) {
+                selectedPlants.splice(i, 1);
+                break; //<-- Uncomment  if only the first term has to be removed
+            }
+        }
+
+        $('#' + plant.id + "_row").hide();
+        $('#' + plant.id + '_sqft_row').hide();
+        $("#selectAll").prop("checked", false);
+
+        displaySelectedPlantsArea();
+    }
+
+
+    function addPlant(plant) {
+        //probably don't need to check for existence
+        selectedPlants.push(JSON.stringify(plant));
+        $('#' + plant.id + "_row").show();
+        if ($('#sqftinput').val() == 0) {
+            calcSqFt();
+        } else {
+            showAndSetSqFtRow(plant.id, 0);
+        }
+    }
 
 
     function addCheckbox(plant) {
@@ -192,22 +435,16 @@
         checkbox.change(function (e) {
             var row = $('#' + plant.id + "_row");
             if (this.checked) {
-                localStorage.setItem("plantselected_" + plant.id, "true");
-                row.css("display", "");
-            } else {
-                localStorage.setItem("plantselected_" + plant.id, "false");
-                row.css("display", "none");
-                $("#selectAll").prop("checked", false);
-            }
+                addPlant(plant);
 
+            } else {
+                removePlant(plant);
+            }
 
         });
         checkbox.prependTo(label);
 
         label.appendTo(container);
-        localStorage.setItem("plantselected_" + plant.id, "false");
-
-        //        $('<br>').appendTo(container);
     }
 
 
@@ -224,7 +461,9 @@
         });
 
         checkbox.change(function (e) {
+
             $(".plantCheckbox").prop('checked', $(this).prop('checked')).change();
+
         });
 
         checkbox.prop("checked", true).change();
@@ -243,19 +482,6 @@
         $("#plantsButton").click(function () {
             $("#plants").slideToggle("slow");
         });
-    }
-
-
-
-
-    Array.prototype.allValuesSame = function () {
-
-        for (var i = 1; i < this.length; i++) {
-            if (this[i] !== this[0])
-                return false;
-        }
-
-        return true;
     }
 </script>
 
