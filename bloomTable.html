@@ -126,8 +126,11 @@
     });
 
     function buildTable() {
+        addHeightRow('Tall');
         addToTable(tallPlants);
+        addHeightRow('Medium');
         addToTable(mediumPlants);
+        addHeightRow('Short');
         addToTable(smallPlants);
     }
 
@@ -285,15 +288,36 @@
 
         var $warningDiv = $('#warningDiv');
         $warningDiv.show();
-        if(totalArea > $('#sqftinput').val()){
+        if (totalArea > $('#sqftinput').val()) {
             $warningDiv.html("Selected plants require " + totalArea + " square feet.  This exceeds your desired area.");
-        }else{
+        } else {
             $warningDiv.html("Selected plants require " + totalArea + " square feet.");
+        }
+    }
+
+    function addHeightRow(height) {
+        var $table = $('#bloomTableBody');
+
+        var heightRow = $('<tr>')
+            .attr('id', height + '_row')
+            //            .css("display", "none")
+            .appendTo($table);
+
+        heightRow.addClass("plantHeightRow");
+
+        var heightTD = $('<td>')
+            .html('<span style="font-weight:bold">' + height + '</span>')
+            .appendTo(heightRow);
+
+        for (i = 4; i <= 10; i++) {
+            var heightTD = $('<td>');
+            heightTD.appendTo(heightRow);
         }
     }
 
     function addToTable(plantArray) {
         var $table = $('#bloomTableBody');
+
         plantArray.forEach(function (plant) {
 
             addCheckbox(plant);
@@ -324,9 +348,9 @@
                 var $td = $('<td>');
                 if (i >= plant.start && i <= plant.end) {
 
-                    if (plant.size != 'med') {
-                        $td.html((plant.size == 'tall') ? '&uarr;' : '&darr;');
-                    }
+                    //                    if (plant.size != 'med') {
+                    //                        $td.html((plant.size == 'tall') ? '&uarr;' : '&darr;');
+                    //                    }
 
                     if (plant.color == 'white') {
                         $td.css("border-top", "1px solid #4f4f4f");
