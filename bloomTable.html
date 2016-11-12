@@ -371,8 +371,30 @@
     }
 
 
+    function removeHeightRowIfEmpty(plant) {
+        var removeHeightRow = true;
+        for (var i = selectedPlants.length - 1; i >= 0; i--) {
+            var selectedPlant = JSON.parse(selectedPlants[i]);
+            if (selectedPlant.size == plant.size) {
+                removeHeightRow = false;
+                break; //<-- Uncomment  if only the first term has to be removed
+            }
+        }
+
+        if (removeHeightRow) {
+            var rowSize = 'Tall';
+            if (plant.size == 'med') {
+                rowSize = 'Medium';
+            } else if (plant.size == 'short') {
+                rowSize = 'Short';
+            }
+            $('#' + rowSize + '_row').css("display", "none");
+        }
+
+    }
 
     function removePlant(plant) {
+
         for (var i = selectedPlants.length - 1; i >= 0; i--) {
             var selectedPlant = JSON.parse(selectedPlants[i]);
             if (selectedPlant.id == plant.id) {
@@ -380,6 +402,8 @@
                 break; //<-- Uncomment  if only the first term has to be removed
             }
         }
+
+        removeHeightRowIfEmpty(plant);
 
         $('#' + plant.id + "_row").hide();
         $('#' + plant.id + '_sqft_row').hide();
@@ -398,6 +422,14 @@
         } else {
             showAndSetSqFtRow(plant.id, 0);
         }
+
+        var rowSize = 'Tall';
+        if (plant.size == 'med') {
+            rowSize = 'Medium';
+        } else if (plant.size == 'short') {
+            rowSize = 'Short';
+        }
+        $('#' + rowSize + '_row').css("display", "");
     }
 
 
