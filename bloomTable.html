@@ -2,6 +2,12 @@
 <html>
 
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+
     <style>
         .bloomTable {
             border-collapse: collapse;
@@ -32,12 +38,16 @@
 
 <body>
     <center>
-        <h2>Bloom Table</h2></center>
+        <div class="page-header">
+            <h2>Bloom Table</h2>
+        </div>
+    </center>
+
 
 
     <p>
         <center>
-            <input id="plantsButton" class="btn" type="button" value="Plants" />
+            <input id="plantsButton" class="btn btn-primary" type="button" value="Plants" />
         </center>
     </p>
 
@@ -52,13 +62,34 @@
                 <thead>
                     <tr id="header">
                         <th></th>
-                        <th>April</th>
-                        <th>May</th>
-                        <th>June</th>
-                        <th>July</th>
-                        <th>August</th>
-                        <th>September</th>
-                        <th>October</th>
+                        <th>
+                            <span class="visible-lg-block visible-md-block">April</span>
+                            <span class="visible-sm-block visible-xs-block">Apr</span>
+                        </th>
+                        <th>
+                            <span class="visible-lg-block visible-md-block">May</span>
+                            <span class="visible-sm-block visible-xs-block">May</span>
+                        </th>
+                        <th>
+                            <span class="visible-lg-block visible-md-block">June</span>
+                            <span class="visible-sm-block visible-xs-block">Jun</span>
+                        </th>
+                        <th>
+                            <span class="visible-lg-block visible-md-block">July</span>
+                            <span class="visible-sm-block visible-xs-block">Jul</span>
+                        </th>
+                        <th>
+                            <span class="visible-lg-block visible-md-block">August</span>
+                            <span class="visible-sm-block visible-xs-block">Aug</span>
+                        </th>
+                        <th>
+                            <span class="visible-lg-block visible-md-block">September</span>
+                            <span class="visible-sm-block visible-xs-block">Sep</span>
+                        </th>
+                        <th>
+                            <span class="visible-lg-block visible-md-block">October</span>
+                            <span class="visible-sm-block visible-xs-block">Oct</span>
+                        </th>
                     </tr>
                 </thead>
                 <tbody id="bloomTableBody">
@@ -105,18 +136,18 @@
 
 <script>
     //Tall
-    var newenglandaster = JSON.parse('{"id": "newenglandaster", "name":"New England Aster", "start": 8, "end" : 9, "size" : "tall", "spacing": "2.5", "color":"#aa71c2", "bloom" : ["late"]}');
+    var newenglandaster = JSON.parse('{"id": "newenglandaster", "name":"New England Aster", "initials":"NEA",  "start": 8, "end" : 9, "size" : "tall", "spacing": "2.5", "color":"#aa71c2", "bloom" : ["late"]}');
 
     //Medium
-    var purpleconeflower = JSON.parse('{"id": "purpleconeflower", "name":"Purple Coneflower", "start": 6, "end" : 8, "size" : "med", "spacing": "1.5","color":"#ff8ecf", "bloom" : ["mid","late"]}');
-    var blazingstar = JSON.parse('{"id":"blazingstar", "name":"Prairie Blazing Star", "start": 7, "end" : 8, "size" : "med", "spacing": "1","color":"#ad79b7", "bloom" : ["mid","late"]}');
-    var pprairieclover = JSON.parse('{"id":"pprairieclover", "name":"Purple Prairie Clover", "start": 6, "end" : 8, "size" : "med", "spacing": "1.5","color":"#b632a9", "bloom" : ["mid","late"]}');
-    var bluestar = JSON.parse('{"id":"bluestar", "latin":"Amsonia ciliata", "name":"Blue Star", "start": 5, "end" : 5, "size" : "med", "spacing": "3","color":"#acaed5", "bloom" : ["early"]}');
-    var thimbleweed = JSON.parse('{"id":"thimbleweed", "latin":"Amsonia ciliata", "name":"Thimbleweed", "start": 4, "end" : 5, "size" : "med", "spacing": "1","color":"white", "bloom" : ["early"]}');
+    var purpleconeflower = JSON.parse('{"id": "purpleconeflower", "name":"Purple Coneflower", "initials":"PC", "start": 6, "end" : 8, "size" : "med", "spacing": "1.5","color":"#ff8ecf", "bloom" : ["mid","late"]}');
+    var blazingstar = JSON.parse('{"id":"blazingstar", "name":"Prairie Blazing Star", "initials":"PBS", "start": 7, "end" : 8, "size" : "med", "spacing": "1","color":"#ad79b7", "bloom" : ["mid","late"]}');
+    var pprairieclover = JSON.parse('{"id":"pprairieclover", "name":"Purple Prairie Clover", "initials":"PPC", "start": 6, "end" : 8, "size" : "med", "spacing": "1.5","color":"#b632a9", "bloom" : ["mid","late"]}');
+    var bluestar = JSON.parse('{"id":"bluestar", "latin":"Amsonia ciliata", "name":"Blue Star", "initials":"BS", "start": 5, "end" : 5, "size" : "med", "spacing": "3","color":"#acaed5", "bloom" : ["early"]}');
+    var thimbleweed = JSON.parse('{"id":"thimbleweed", "latin":"Amsonia ciliata", "name":"Thimbleweed", "initials":"T", "start": 4, "end" : 5, "size" : "med", "spacing": "1","color":"white", "bloom" : ["early"]}');
 
     //Small
-    var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "start": 6, "end" : 9, "size" : "short", "spacing": ".5","color":"#a4a8ff", "bloom" : ["mid", "late"]}');
-    var loveleighest = JSON.parse('{"id":"loveleighest", "name":"MostLoveLeigh", "start": 6, "end" : 7, "size" : "short", "spacing": "1","color":"#a4a8ff", "bloom" : ["mid"]}');
+    var harebell = JSON.parse('{"id":"harebell", "name":"Harebell", "initials":"H", "start": 6, "end" : 9, "size" : "short", "spacing": ".5","color":"#a4a8ff", "bloom" : ["mid", "late"]}');
+    var loveleighest = JSON.parse('{"id":"loveleighest", "name":"MostLoveLeigh", "initials":"MLH", "start": 6, "end" : 7, "size" : "short", "spacing": "1","color":"#a4a8ff", "bloom" : ["mid"]}');
 
     var tallPlants = new Array(newenglandaster);
     var mediumPlants = new Array(purpleconeflower, blazingstar, pprairieclover, bluestar, thimbleweed);
@@ -315,7 +346,8 @@
         heightRow.addClass("plantHeightRow");
 
         var heightTD = $('<td>')
-            .html('<span style="font-weight:bold">' + height + '</span>')
+            .append('<span style="font-weight:bold" class="visible-lg-block visible-md-block">' + height + '</span>')
+            .append('<span style="font-weight:bold" class="visible-sm-block visible-xs-block">' + height.charAt(0) + '</span>')
             .appendTo(heightRow);
 
         for (i = 4; i <= 10; i++) {
@@ -349,7 +381,8 @@
 
 
             var $td = $('<td>')
-                .text(plant.name)
+                .append('<span class="visible-lg-block visible-md-block">' + plant.name + '</span>')
+                .append('<span class="visible-sm-block visible-xs-block">' + plant.initials + '</span>')
                 .appendTo($row);
 
 
