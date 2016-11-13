@@ -53,6 +53,8 @@
 
     <p>
         <div id="plants" class='plants_div'>
+            <ul id="plants_ul" class="list-inline">
+            </ul>
         </div>
     </p>
 
@@ -472,7 +474,7 @@
 
 
     function addCheckbox(plant) {
-        var container = $('#plants');
+        var list = $('#plants_ul');
 
         var label = $('<label />', {
             id: plant.id + "_label",
@@ -510,14 +512,16 @@
         });
         checkbox.prependTo(label);
 
-        label.appendTo(container);
+        var listItem = $('<li/>')
+        label.appendTo(listItem);
+        listItem.appendTo(list);
     }
 
 
 
 
     function addSelectAll() {
-        var container = $('#plants');
+        var list = $('#plants_ul');
 
         var checkbox = $('<input />', {
             type: 'checkbox',
@@ -534,14 +538,18 @@
 
         checkbox.prop("checked", true).change();
 
-        checkbox.appendTo(container);
-
-        $('<label />', {
+        var label = $('<label />', {
             'for': 'selectAll',
             text: 'Select All'
-        }).appendTo(container);
+        });
 
-        $('<br>').appendTo(container);
+        checkbox.prependTo(label);
+
+        var listItem = $('<li/>')
+        label.appendTo(listItem);
+        listItem.appendTo(list);
+
+        //        $('<br>').appendTo(container);
     }
 
     function initPlantsButton() {
