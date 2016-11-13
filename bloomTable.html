@@ -159,6 +159,8 @@
 
     $(document).ready(function () {
 
+        $('[data-toggle="tooltip"]').tooltip();
+
         initPlantsButton();
         buildTable();
         buildSqFtTable();
@@ -384,14 +386,14 @@
 
             var $td = $('<td>')
                 .append('<span class="visible-lg-block visible-md-block">' + plant.name + '</span>')
-                .append('<span class="visible-sm-block visible-xs-block">' + plant.initials + '</span>')
+                .append('<span data-toggle="tooltip" data-placement="top" title="' + plant.name + '" class="visible-sm-block visible-xs-block">' + plant.initials + '</span>')
                 .appendTo($row);
 
 
             for (i = 4; i <= 10; i++) {
                 var $td = $('<td>');
                 if (i >= plant.start && i <= plant.end) {
-
+                    $td = $('<td data-toggle="tooltip" data-placement="top" title="' + plant.name + '">');
                     if (plant.color == 'white') {
                         $td.css("border-top", "1px solid #4f4f4f");
                         $td.css("border-bottom", "1px solid #4f4f4f");
@@ -549,7 +551,6 @@
         label.appendTo(listItem);
         listItem.appendTo(list);
 
-        //        $('<br>').appendTo(container);
     }
 
     function initPlantsButton() {
