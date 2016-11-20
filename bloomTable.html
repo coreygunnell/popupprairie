@@ -533,7 +533,16 @@
 
         checkbox.change(function (e) {
 
-            $(".plantCheckbox").prop('checked', $(this).prop('checked')).change();
+            document.querySelectorAll('.plantCheckbox').forEach(function (plantcheckbox) {
+                var selectAllChecked = $(checkbox).prop('checked');
+                console.log("selectAllChecked = " + selectAllChecked);
+                if ($(plantcheckbox).prop('checked') === selectAllChecked) {
+                    console.log(plantcheckbox.id + " is already the same as the selectAllButton");
+                } else {
+                    console.log(plantcheckbox.id + " is NOT the same so change it.");
+                    $(plantcheckbox).prop('checked', selectAllChecked).change();
+                }
+            });
 
         });
 
