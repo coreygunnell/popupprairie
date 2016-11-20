@@ -213,7 +213,7 @@
             var sqftinch = sqft * 144;
             var minSpacing = getMinSqFtFromSelected();
             console.log('minSpacing: ' + minSpacing);
-            while (sqftinch > minSpacing) {
+            while (sqftinch >= minSpacing) {
                 console.log('sqft ' + sqftinch + ">  min " + minSpacing);
                 for (i = 0; i < selectedPlants.length; i++) {
                     var plant = JSON.parse(selectedPlants[i]);
@@ -380,7 +380,6 @@
             $row.click(function () {
                 $('#' + plant.id + '_checkbox').prop('checked', false).change();
                 removePlant(plant);
-                //                calcSqFt();
             });
 
 
