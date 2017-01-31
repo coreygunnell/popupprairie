@@ -334,7 +334,7 @@
         var $warningDiv = $('#warningDiv');
         $warningDiv.show();
         if (totalArea > $('#sqftinput').val()) {
-            $warningDiv.html("Selected plants require " + totalArea + " square feet.  This exceeds your desired area.");
+            $warningDiv.html('<p class="bg-danger">Selected plants require ' + totalArea + ' square feet.  This exceeds your desired area.</p>');
         } else {
             $warningDiv.html("Selected plants require " + totalArea + " square feet.");
         }
