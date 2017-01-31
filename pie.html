@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+
+    <style>
+        .bloomTable {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: none;
+            text-align: left;
+            padding: 8px;
+        }
+
+        .plants_div {
+            display: none;
+        }
+
+        .plantCheckboxLabel {
+            font-weight: bold;
+        }
+
+        .tooManyPlantsDiv {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row" id='plant_buttons_div'>
+        </div>
+    </div>
+
+
+
+
+</body>
+
+<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $('[data-toggle="tooltip"]').tooltip();
+
+        addPlantButtons();
+
+
+    });
+
+    //
+    //highcharts.com for donut chart
+
+    function addPlantButtons() {
+
+        var plant_buttons_div = $('#plant_buttons_div');
+        for (i = 0; i < 24; i++) {
+            var div = $('<div>')
+                .addClass("col-xs-6 col-sm-4 col-md-3 col-lg-1")
+                .appendTo(plant_buttons_div);
+
+            var hexColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+
+            var $button = $('<button>')
+                .attr('id', 'plant' + i)
+                .attr("type", "button")
+                .attr('background-color', hexColor)
+                .text('plant' + i)
+                .addClass("btn-lg btn-default")
+                .appendTo(div);
+        }
+    }
+</script>
+
+</html>
